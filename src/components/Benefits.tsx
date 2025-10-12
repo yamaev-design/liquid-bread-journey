@@ -1,6 +1,8 @@
 import { Droplets, Heart, Users, Lightbulb } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
+import beerVarietiesImage from "@/assets/beer-varieties.jpg";
+import beerBubblesImage from "@/assets/beer-bubbles.jpg";
 
 const benefits = [
   {
@@ -45,8 +47,16 @@ const Benefits = () => {
   };
 
   return (
-    <section id="benefits" className="py-20 px-6 bg-background">
-      <div className="max-w-7xl mx-auto">
+    <section id="benefits" className="py-20 px-6 bg-background relative overflow-hidden">
+      {/* Background decorative images */}
+      <div className="absolute top-20 right-0 w-1/3 h-64 opacity-10 pointer-events-none">
+        <img src={beerBubblesImage} alt="" className="w-full h-full object-cover rounded-l-3xl" />
+      </div>
+      <div className="absolute bottom-20 left-0 w-1/4 h-48 opacity-10 pointer-events-none">
+        <img src={beerVarietiesImage} alt="" className="w-full h-full object-cover rounded-r-3xl" />
+      </div>
+
+      <div className="max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-16 animate-fade-in">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-primary">
             Польза и культурное значение пива

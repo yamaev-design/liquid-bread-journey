@@ -1,5 +1,7 @@
 import { MapPin } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { useState } from "react";
+import beerVarietiesImage from "@/assets/beer-varieties.jpg";
 
 const beerStyles = [
   {
@@ -35,9 +37,16 @@ const beerStyles = [
 ];
 
 const Contemporary = () => {
+  const [hoveredStyle, setHoveredStyle] = useState<number | null>(null);
+
   return (
-    <section id="contemporary" className="py-20 px-6 bg-card">
-      <div className="max-w-7xl mx-auto">
+    <section id="contemporary" className="py-20 px-6 bg-card relative overflow-hidden">
+      {/* Background decorative image */}
+      <div className="absolute bottom-0 right-0 w-2/5 h-80 opacity-10 pointer-events-none">
+        <img src={beerVarietiesImage} alt="" className="w-full h-full object-cover" />
+      </div>
+
+      <div className="max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-16 animate-fade-in">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-primary">
             От индустриального пива к культурному возрождению
@@ -95,7 +104,15 @@ const Contemporary = () => {
         {/* Beer Styles Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {beerStyles.map((style, index) => (
-            <Card key={index} className="shadow-warm hover:shadow-glow transition-all duration-300 hover:scale-105 animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
+            <Card 
+              key={index} 
+              className={`shadow-warm hover:shadow-glow transition-all duration-300 hover:scale-105 animate-fade-in cursor-pointer ${
+                hoveredStyle === index ? 'ring-2 ring-primary' : ''
+              }`}
+              style={{ animationDelay: `${index * 0.1}s` }}
+              onMouseEnter={() => setHoveredStyle(index)}
+              onMouseLeave={() => setHoveredStyle(null)}
+            >
               <CardContent className="p-6">
                 <div className="flex items-start gap-3 mb-3">
                   <MapPin className="w-5 h-5 text-primary mt-1 flex-shrink-0" />

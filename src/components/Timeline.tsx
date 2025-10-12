@@ -1,5 +1,7 @@
 import { Scroll, Pyramid, Church, Ship, Beer } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { useState } from "react";
+import beerPourImage from "@/assets/beer-pour.jpg";
 
 const timelineEvents = [
   {
@@ -40,9 +42,16 @@ const timelineEvents = [
 ];
 
 const Timeline = () => {
+  const [selectedEvent, setSelectedEvent] = useState<number | null>(null);
+
   return (
-    <section id="origins" className="py-20 px-6 bg-card">
-      <div className="max-w-7xl mx-auto">
+    <section id="origins" className="py-20 px-6 bg-card relative overflow-hidden">
+      {/* Background decorative image */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 opacity-5 pointer-events-none">
+        <img src={beerPourImage} alt="" className="w-full h-full object-cover rounded-full blur-sm" />
+      </div>
+
+      <div className="max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-16 animate-fade-in">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-primary">
             Истоки пивоварения
@@ -72,7 +81,12 @@ const Timeline = () => {
                 >
                   {/* Content Card */}
                   <div className="w-full lg:w-5/12">
-                    <Card className="shadow-warm hover:shadow-glow transition-all duration-300 hover:scale-105">
+                    <Card 
+                      className={`shadow-warm hover:shadow-glow transition-all duration-300 hover:scale-105 cursor-pointer ${
+                        selectedEvent === index ? 'ring-2 ring-primary scale-105' : ''
+                      }`}
+                      onClick={() => setSelectedEvent(selectedEvent === index ? null : index)}
+                    >
                       <CardContent className="p-6">
                         <div className="flex items-start gap-4">
                           <div className="p-3 bg-gradient-amber rounded-full shadow-warm">
