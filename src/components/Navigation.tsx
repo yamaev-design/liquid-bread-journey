@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 const navItems = [
   { label: "Истоки", id: "origins" },
   { label: "Польза и культура", id: "benefits" },
+  { label: "Закуски", id: "snacks" },
   { label: "Современность", id: "contemporary" },
   { label: "Ответственность", id: "responsibility" },
 ];

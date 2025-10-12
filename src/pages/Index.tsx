@@ -3,6 +3,7 @@ import Hero from "@/components/Hero";
 import Timeline from "@/components/Timeline";
 import Benefits from "@/components/Benefits";
 import BeerPourAnimation from "@/components/BeerPourAnimation";
+import BeerSnacks from "@/components/BeerSnacks";
 import Contemporary from "@/components/Contemporary";
 import Responsibility from "@/components/Responsibility";
 import Footer from "@/components/Footer";
@@ -16,6 +17,7 @@ const Index = () => {
         <Timeline />
         <Benefits />
         <BeerPourAnimation />
+        <BeerSnacks />
         <Contemporary />
         <Responsibility />
       </main>
