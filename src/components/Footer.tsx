@@ -57,7 +57,7 @@ const Footer = () => {
             <h4 className="font-bold text-foreground mb-4">Связь</h4>
             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
               <Mail className="w-4 h-4" />
-              <span>info@beerheritage.com</span>
+              <span>yamaev@gmail.com</span>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
               Если у вас есть вопросы, предложения или вы хотите внести свой вклад в проект, свяжитесь с нами.
