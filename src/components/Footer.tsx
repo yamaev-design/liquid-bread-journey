@@ -1,10 +1,7 @@
 import { Beer, Mail, Heart } from "lucide-react";
-
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-
-  return (
-    <footer className="bg-card border-t border-border py-12 px-6">
+  return <footer className="bg-card border-t border-border py-12 px-6">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           {/* Logo & Description */}
@@ -25,34 +22,30 @@ const Footer = () => {
             <h4 className="font-bold text-foreground mb-4">Разделы</h4>
             <ul className="space-y-2">
               <li>
-                <button
-                  onClick={() => document.getElementById("origins")?.scrollIntoView({ behavior: "smooth" })}
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
+                <button onClick={() => document.getElementById("origins")?.scrollIntoView({
+                behavior: "smooth"
+              })} className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   Истоки пивоварения
                 </button>
               </li>
               <li>
-                <button
-                  onClick={() => document.getElementById("benefits")?.scrollIntoView({ behavior: "smooth" })}
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
+                <button onClick={() => document.getElementById("benefits")?.scrollIntoView({
+                behavior: "smooth"
+              })} className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   Польза и культура
                 </button>
               </li>
               <li>
-                <button
-                  onClick={() => document.getElementById("contemporary")?.scrollIntoView({ behavior: "smooth" })}
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
+                <button onClick={() => document.getElementById("contemporary")?.scrollIntoView({
+                behavior: "smooth"
+              })} className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   Современность
                 </button>
               </li>
               <li>
-                <button
-                  onClick={() => document.getElementById("responsibility")?.scrollIntoView({ behavior: "smooth" })}
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
+                <button onClick={() => document.getElementById("responsibility")?.scrollIntoView({
+                behavior: "smooth"
+              })} className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   Ответственность
                 </button>
               </li>
@@ -81,13 +74,11 @@ const Footer = () => {
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <span>Сделано с</span>
               <Heart className="w-4 h-4 text-primary fill-primary" />
-              <span>для любителей истории</span>
+              <span>для любителей bp 10-24 </span>
             </div>
           </div>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;
