@@ -74,7 +74,7 @@ const Footer = () => {
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <span>Сделано с</span>
               <Heart className="w-4 h-4 text-primary fill-primary" />
-              <span>для любителей bp 10-24 </span>
+              <span>для любителей из 10-24 ГМУ ОЗ</span>
             </div>
           </div>
         </div>
