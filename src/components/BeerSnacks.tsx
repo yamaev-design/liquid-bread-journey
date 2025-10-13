@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ThumbsUp, Fish, Nut, Cookie, Beef, Pizza } from "lucide-react";
 import beerSnacksImage from "@/assets/beer-snacks.jpg";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface Snack {
   id: number;
@@ -72,21 +74,100 @@ const BeerSnacks = () => {
   const [snackVotes, setSnackVotes] = useState(snacks);
   const [selectedSnack, setSelectedSnack] = useState<number | null>(null);
   const [userVoted, setUserVoted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
-  const handleVote = (id: number) => {
-    if (!userVoted) {
-      setSnackVotes(prev => prev.map(snack => 
-        snack.id === id ? { ...snack, votes: snack.votes + 1 } : snack
-      ));
+  // Load snacks from database
+  useEffect(() => {
+    loadSnacks();
+    checkIfVoted();
+  }, []);
+
+  const loadSnacks = async () => {
+    const { data, error } = await supabase
+      .from('snacks')
+      .select('*')
+      .order('id');
+    
+    if (data && !error) {
+      const updatedSnacks = snacks.map(snack => {
+        const dbSnack = data.find(d => d.id === snack.id);
+        return dbSnack ? { ...snack, votes: dbSnack.votes } : snack;
+      });
+      setSnackVotes(updatedSnacks);
+    }
+  };
+
+  const checkIfVoted = async () => {
+    // Check localStorage first for client-side persistence
+    const voted = localStorage.getItem('beer_snack_voted');
+    if (voted) {
+      setUserVoted(true);
+      setSelectedSnack(parseInt(voted));
+    }
+  };
+
+  const handleVote = async (id: number) => {
+    if (userVoted || loading) return;
+    
+    setLoading(true);
+    try {
+      const response = await supabase.functions.invoke('vote-snack', {
+        body: { snackId: id }
+      });
+
+      if (response.error) {
+        toast({
+          title: "Ошибка",
+          description: response.error.message || "Не удалось проголосовать",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (response.data?.error) {
+        toast({
+          title: "Уже проголосовали",
+          description: response.data.error,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Update local state with fresh data from server
+      if (response.data?.snacks) {
+        const updatedSnacks = snacks.map(snack => {
+          const dbSnack = response.data.snacks.find((d: any) => d.id === snack.id);
+          return dbSnack ? { ...snack, votes: dbSnack.votes } : snack;
+        });
+        setSnackVotes(updatedSnacks);
+      }
+
       setUserVoted(true);
       setSelectedSnack(id);
+      localStorage.setItem('beer_snack_voted', id.toString());
+      
+      toast({
+        title: "Спасибо за голос!",
+        description: "Ваш голос учтён"
+      });
+    } catch (error) {
+      console.error('Vote error:', error);
+      toast({
+        title: "Ошибка",
+        description: "Не удалось проголосовать. Попробуйте позже.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   const resetVotes = () => {
-    setSnackVotes(snacks);
+    localStorage.removeItem('beer_snack_voted');
     setUserVoted(false);
     setSelectedSnack(null);
+    loadSnacks();
   };
 
   const totalVotes = snackVotes.reduce((sum, snack) => sum + snack.votes, 0);
@@ -210,9 +291,10 @@ const BeerSnacks = () => {
                     <Button 
                       className="w-full gradient-amber text-foreground font-semibold shadow-warm hover:shadow-glow transition-all"
                       onClick={() => handleVote(snack.id)}
+                      disabled={loading}
                     >
                       <ThumbsUp className="w-4 h-4 mr-2" />
-                      Проголосовать
+                      {loading ? 'Голосую...' : 'Проголосовать'}
                     </Button>
                   )}
 

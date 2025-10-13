@@ -1,1 +1,4 @@
 project_id = "isbvdtqxsttiqfgepefu"
+
+[functions.vote-snack]
+verify_jwt = false

@@ -49,6 +49,11 @@ const Footer = () => {
                   Ответственность
                 </button>
               </li>
+              <li>
+                <a href="/admin-login" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  Админ-панель
+                </a>
+              </li>
             </ul>
           </div>
 

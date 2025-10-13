@@ -14,16 +14,90 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      snack_votes_ips: {
+        Row: {
+          id: string
+          ip_address: string
+          snack_id: number
+          voted_at: string
+        }
+        Insert: {
+          id?: string
+          ip_address: string
+          snack_id: number
+          voted_at?: string
+        }
+        Update: {
+          id?: string
+          ip_address?: string
+          snack_id?: number
+          voted_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "snack_votes_ips_snack_id_fkey"
+            columns: ["snack_id"]
+            isOneToOne: false
+            referencedRelation: "snacks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      snacks: {
+        Row: {
+          id: number
+          name: string
+          votes: number
+        }
+        Insert: {
+          id: number
+          name: string
+          votes?: number
+        }
+        Update: {
+          id?: number
+          name?: string
+          votes?: number
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      increment_snack_vote: {
+        Args: { snack_id_param: number }
+        Returns: undefined
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +224,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
