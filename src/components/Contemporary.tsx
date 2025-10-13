@@ -69,7 +69,40 @@ const Contemporary = () => {
 
           {/* Simplified World Map (decorative) */}
           <div className="relative h-[400px] bg-gradient-to-br from-primary/5 to-accent/10 rounded-xl border-2 border-border overflow-hidden">
-            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_50%_50%,_hsl(var(--primary))_0%,_transparent_50%)]" />
+            {/* SVG World Map Background */}
+            <svg 
+              viewBox="0 0 1000 500" 
+              className="absolute inset-0 w-full h-full opacity-20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              {/* North America */}
+              <path d="M150,100 L180,80 L220,85 L240,100 L250,130 L245,160 L230,180 L200,190 L170,185 L150,170 L140,140 Z" 
+                fill="hsl(var(--primary))" stroke="hsl(var(--border))" strokeWidth="1"/>
+              
+              {/* South America */}
+              <path d="M230,250 L250,230 L270,240 L275,270 L280,310 L270,340 L250,360 L230,350 L220,320 L215,290 Z" 
+                fill="hsl(var(--primary))" stroke="hsl(var(--border))" strokeWidth="1"/>
+              
+              {/* Europe */}
+              <path d="M470,110 L500,100 L530,105 L540,125 L535,145 L520,155 L500,160 L480,150 L465,135 Z" 
+                fill="hsl(var(--accent))" stroke="hsl(var(--border))" strokeWidth="1"/>
+              
+              {/* Africa */}
+              <path d="M480,190 L510,185 L540,200 L550,230 L555,270 L545,310 L520,330 L490,325 L470,300 L465,260 L468,220 Z" 
+                fill="hsl(var(--primary))" stroke="hsl(var(--border))" strokeWidth="1"/>
+              
+              {/* Asia */}
+              <path d="M550,80 L620,75 L680,85 L730,100 L760,130 L770,160 L760,190 L730,200 L680,195 L640,185 L600,170 L570,150 L555,125 Z" 
+                fill="hsl(var(--primary))" stroke="hsl(var(--border))" strokeWidth="1"/>
+              
+              {/* Australia */}
+              <path d="M750,320 L780,315 L810,325 L820,345 L815,365 L790,375 L760,370 L745,355 Z" 
+                fill="hsl(var(--primary))" stroke="hsl(var(--border))" strokeWidth="1"/>
+              
+              {/* Grid lines for reference */}
+              <line x1="0" y1="250" x2="1000" y2="250" stroke="hsl(var(--border))" strokeWidth="0.5" strokeDasharray="5,5" opacity="0.3"/>
+              <line x1="500" y1="0" x2="500" y2="500" stroke="hsl(var(--border))" strokeWidth="0.5" strokeDasharray="5,5" opacity="0.3"/>
+            </svg>
             
             {/* Map Markers */}
             {beerStyles.map((style, index) => (
