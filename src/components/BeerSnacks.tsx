@@ -72,15 +72,14 @@ const snacks: Snack[] = [
 
 const BeerSnacks = () => {
   const [snackVotes, setSnackVotes] = useState(snacks);
-  const [selectedSnack, setSelectedSnack] = useState<number | null>(null);
-  const [userVoted, setUserVoted] = useState(false);
+  const [votedSnacks, setVotedSnacks] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
   // Load snacks from database
   useEffect(() => {
     loadSnacks();
-    checkIfVoted();
+    checkVotedSnacks();
   }, []);
 
   const loadSnacks = async () => {
@@ -98,17 +97,21 @@ const BeerSnacks = () => {
     }
   };
 
-  const checkIfVoted = async () => {
-    // Check localStorage first for client-side persistence
+  const checkVotedSnacks = () => {
+    // Check localStorage for voted snacks
     const voted = localStorage.getItem('beer_snack_voted');
     if (voted) {
-      setUserVoted(true);
-      setSelectedSnack(parseInt(voted));
+      try {
+        const votedIds = JSON.parse(voted);
+        setVotedSnacks(Array.isArray(votedIds) ? votedIds : []);
+      } catch {
+        setVotedSnacks([]);
+      }
     }
   };
 
   const handleVote = async (id: number) => {
-    if (userVoted || loading) return;
+    if (votedSnacks.includes(id) || loading) return;
     
     setLoading(true);
     try {
@@ -143,9 +146,9 @@ const BeerSnacks = () => {
         setSnackVotes(updatedSnacks);
       }
 
-      setUserVoted(true);
-      setSelectedSnack(id);
-      localStorage.setItem('beer_snack_voted', id.toString());
+      const newVotedSnacks = [...votedSnacks, id];
+      setVotedSnacks(newVotedSnacks);
+      localStorage.setItem('beer_snack_voted', JSON.stringify(newVotedSnacks));
       
       toast({
         title: "Спасибо за голос!",
@@ -165,8 +168,7 @@ const BeerSnacks = () => {
 
   const resetVotes = () => {
     localStorage.removeItem('beer_snack_voted');
-    setUserVoted(false);
-    setSelectedSnack(null);
+    setVotedSnacks([]);
     loadSnacks();
   };
 
@@ -188,10 +190,10 @@ const BeerSnacks = () => {
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-6">
             Извечный вопрос: что лучше подходит к пиву? Проголосуй за свою любимую закуску!
           </p>
-          {userVoted && (
+          {votedSnacks.length > 0 && (
             <div className="flex items-center justify-center gap-4 mb-4">
               <p className="text-accent font-semibold">
-                ✅ Спасибо за голос! Всего голосов: {totalVotes}
+                ✅ Вы проголосовали за {votedSnacks.length} {votedSnacks.length === 1 ? 'закуску' : 'закуски'}! Всего голосов: {totalVotes}
               </p>
               <Button 
                 onClick={resetVotes}
@@ -208,7 +210,7 @@ const BeerSnacks = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {sortedSnacks.map((snack, index) => {
             const Icon = snack.icon;
-            const isSelected = selectedSnack === snack.id;
+            const hasVoted = votedSnacks.includes(snack.id);
             const votePercentage = totalVotes > 0 ? Math.round((snack.votes / totalVotes) * 100) : 0;
             const isLeader = index === 0 && snack.votes > 0;
 
@@ -216,7 +218,7 @@ const BeerSnacks = () => {
               <Card
                 key={snack.id}
                 className={`shadow-warm hover:shadow-glow transition-all duration-300 hover:scale-105 cursor-pointer animate-fade-in relative overflow-hidden ${
-                  isSelected ? 'ring-2 ring-primary scale-105' : ''
+                  hasVoted ? 'ring-2 ring-primary scale-105' : ''
                 } ${isLeader ? 'border-2 border-primary' : ''}`}
                 style={{ animationDelay: `${index * 0.1}s` }}
                 onClick={() => handleVote(snack.id)}
@@ -227,7 +229,7 @@ const BeerSnacks = () => {
                   </div>
                 )}
 
-                {userVoted && (
+                {votedSnacks.length > 0 && (
                   <div className="absolute top-0 left-0 right-0 h-2 bg-muted/30">
                     <div 
                       className="h-full gradient-amber transition-all duration-500"
@@ -242,7 +244,7 @@ const BeerSnacks = () => {
                   </div>
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-2xl">{snack.name}</CardTitle>
-                    {userVoted && (
+                    {votedSnacks.length > 0 && (
                       <span className="text-sm font-bold text-primary">
                         {votePercentage}%
                       </span>
@@ -287,7 +289,7 @@ const BeerSnacks = () => {
                     </div>
                   </div>
 
-                  {!userVoted && (
+                  {!hasVoted && (
                     <Button 
                       className="w-full gradient-amber text-foreground font-semibold shadow-warm hover:shadow-glow transition-all"
                       onClick={() => handleVote(snack.id)}
@@ -298,12 +300,18 @@ const BeerSnacks = () => {
                     </Button>
                   )}
 
-                  {userVoted && (
-                    <div className="flex items-center justify-center gap-2 text-sm">
+                  {hasVoted && (
+                    <div className="flex items-center justify-center gap-2 text-sm bg-primary/10 py-2 rounded-lg">
                       <ThumbsUp className="w-4 h-4 text-primary" />
                       <span className="font-semibold text-primary">
-                        {snack.votes} {snack.votes === 1 ? 'голос' : 'голосов'}
+                        ✅ Вы проголосовали
                       </span>
+                    </div>
+                  )}
+                  
+                  {votedSnacks.length > 0 && (
+                    <div className="text-center mt-2 text-sm text-muted-foreground">
+                      {snack.votes} {snack.votes === 1 ? 'голос' : 'голосов'}
                     </div>
                   )}
                 </CardContent>

@@ -25,11 +25,12 @@ Deno.serve(async (req) => {
 
     console.log(`Vote attempt from IP: ${clientIP} for snack: ${snackId}`);
 
-    // Check if this IP has already voted
+    // Check if this IP has already voted for this specific snack
     const { data: existingVote, error: checkError } = await supabaseClient
       .from('snack_votes_ips')
       .select('*')
       .eq('ip_address', clientIP)
+      .eq('snack_id', snackId)
       .maybeSingle();
 
     if (checkError) {
