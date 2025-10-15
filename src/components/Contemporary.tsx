@@ -1,8 +1,7 @@
 import { MapPin } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import beerVarietiesImage from "@/assets/beer-varieties.jpg";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -54,6 +53,45 @@ const beerStyles = [
 
 const Contemporary = () => {
   const [hoveredStyle, setHoveredStyle] = useState<number | null>(null);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<L.Map | null>(null);
+
+  useEffect(() => {
+    if (!mapRef.current || mapInstanceRef.current) return;
+
+    // Initialize map
+    const map = L.map(mapRef.current).setView([30, 15], 2);
+
+    // Add tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Disable scroll zoom
+    map.scrollWheelZoom.disable();
+
+    // Add markers with popups
+    beerStyles.forEach((style) => {
+      const marker = L.marker(style.coordinates, { icon: DefaultIcon }).addTo(map);
+      marker.bindPopup(`
+        <div style="padding: 8px;">
+          <h4 style="font-weight: bold; margin-bottom: 4px; color: hsl(var(--primary));">${style.country}</h4>
+          <p style="font-size: 14px; font-weight: 600; margin-bottom: 8px; color: hsl(var(--accent));">${style.style}</p>
+          <p style="font-size: 12px; line-height: 1.5; color: hsl(var(--muted-foreground));">${style.description}</p>
+        </div>
+      `);
+    });
+
+    mapInstanceRef.current = map;
+
+    // Cleanup
+    return () => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
+    };
+  }, []);
 
   return (
     <section id="contemporary" className="py-20 px-6 bg-card relative overflow-hidden">
@@ -84,33 +122,10 @@ const Contemporary = () => {
           </div>
 
           {/* Interactive World Map */}
-          <div className="relative h-[500px] rounded-xl border-2 border-border overflow-hidden">
-            <MapContainer
-              center={[30, 15]}
-              zoom={2}
-              style={{ height: "100%", width: "100%" }}
-              scrollWheelZoom={false}
-              className="z-0"
-            >
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-              {beerStyles.map((style, index) => (
-                <Marker key={index} position={style.coordinates}>
-                  <Popup>
-                    <div className="p-2">
-                      <h4 className="font-bold text-primary mb-1">{style.country}</h4>
-                      <p className="text-sm font-semibold text-accent mb-2">{style.style}</p>
-                      <p className="text-xs text-muted-foreground leading-relaxed">
-                        {style.description}
-                      </p>
-                    </div>
-                  </Popup>
-                </Marker>
-              ))}
-            </MapContainer>
-          </div>
+          <div 
+            ref={mapRef}
+            className="relative h-[500px] rounded-xl border-2 border-border overflow-hidden z-0"
+          />
         </div>
 
         {/* Beer Styles Grid */}
