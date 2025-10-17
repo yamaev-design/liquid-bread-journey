@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import beerPourImage from "@/assets/beer-pour.jpg";
 import beerFoamImage from "@/assets/beer-foam.jpg";
 
 const BeerPourAnimation = () => {
@@ -18,7 +17,7 @@ const BeerPourAnimation = () => {
     setTimeout(() => {
       setIsPouring(false);
       setIsPoured(true);
-    }, 2000);
+    }, 3000);
   };
 
   return (
@@ -55,17 +54,57 @@ const BeerPourAnimation = () => {
                   </div>
                 </div>
 
-                {/* Pouring animation */}
+                {/* Pouring animation - Animated filling */}
                 <div 
-                  className={`absolute inset-0 transition-opacity duration-500 ${
+                  className={`absolute inset-0 transition-opacity duration-300 ${
                     isPouring ? 'opacity-100' : 'opacity-0'
                   }`}
                 >
-                  <img 
-                    src={beerPourImage} 
-                    alt="Пиво наливается" 
-                    className="w-full h-full object-cover animate-pulse"
-                  />
+                  <div className="relative w-full h-full bg-gradient-to-b from-slate-800 to-slate-900">
+                    {/* Glass outline */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-48 h-64 border-4 border-amber-200/30 rounded-b-[3rem] relative overflow-hidden">
+                        {/* Beer liquid filling animation */}
+                        <div 
+                          className="absolute bottom-0 w-full bg-gradient-to-t from-amber-600 via-amber-500 to-amber-400"
+                          style={{
+                            animation: 'fillGlass 3s ease-out forwards',
+                            height: '0%'
+                          }}
+                        />
+                        {/* Foam forming on top */}
+                        <div 
+                          className="absolute top-0 w-full h-16 bg-gradient-to-b from-amber-100 to-transparent"
+                          style={{
+                            animation: 'foamAppear 3s ease-out 1.5s forwards',
+                            opacity: 0
+                          }}
+                        />
+                        {/* Bubbles */}
+                        <div className="absolute inset-0">
+                          {[...Array(15)].map((_, i) => (
+                            <div
+                              key={i}
+                              className="absolute w-1 h-1 bg-amber-200/60 rounded-full"
+                              style={{
+                                left: `${Math.random() * 80 + 10}%`,
+                                bottom: '0',
+                                animation: `bubbleRise ${2 + Math.random() * 2}s ease-in infinite ${Math.random() * 2}s`,
+                              }}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    {/* Pour stream */}
+                    <div 
+                      className="absolute top-0 left-1/2 -translate-x-1/2 w-2 bg-gradient-to-b from-amber-400 to-amber-600 opacity-80"
+                      style={{
+                        animation: 'pourStream 3s ease-out forwards',
+                        height: '32px'
+                      }}
+                    />
+                  </div>
                 </div>
 
                 {/* Poured state */}
