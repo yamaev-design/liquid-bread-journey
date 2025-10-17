@@ -15,7 +15,7 @@ interface Snack {
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const [snacks, setSnacks] = useState<Snack[]>([]);
   const [totalVotes, setTotalVotes] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -33,67 +33,38 @@ const Admin = () => {
   }, [isAuthenticated]);
 
   const checkAuth = async () => {
+    setIsLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
     
-    if (user) {
-      // Check if user has admin role
-      const { data: roleData } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', user.id)
-        .eq('role', 'admin')
-        .maybeSingle();
-      
-      if (roleData) {
-        setIsAuthenticated(true);
-      }
+    if (!user) {
+      // Not logged in - redirect to admin login
+      navigate('/admin-login');
+      return;
     }
-  };
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
     
-    // Simple password check - in production, use proper auth
-    if (password === "beeradmin2024") {
-      // Check if there's already an admin user
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        toast({
-          title: "Ошибка",
-          description: "Сначала нужно войти в систему",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      // Give admin role
-      const { error } = await supabase
-        .from('user_roles')
-        .insert({ user_id: user.id, role: 'admin' });
-
-      if (error && !error.message.includes('duplicate')) {
-        toast({
-          title: "Ошибка",
-          description: "Не удалось войти",
-          variant: "destructive"
-        });
-        return;
-      }
-
+    // Check if user has admin role
+    const { data: roleData } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .eq('role', 'admin')
+      .maybeSingle();
+    
+    if (roleData) {
       setIsAuthenticated(true);
-      toast({
-        title: "Успешно",
-        description: "Вы вошли в админ-панель"
-      });
     } else {
+      // Authenticated but not admin - show error and redirect
       toast({
-        title: "Ошибка",
-        description: "Неверный пароль",
+        title: "Доступ запрещен",
+        description: "У вас нет прав администратора",
         variant: "destructive"
       });
+      navigate('/');
     }
+    
+    setIsLoading(false);
   };
+
 
   const loadSnacks = async () => {
     const { data, error } = await supabase
@@ -152,30 +123,12 @@ const Admin = () => {
     navigate('/');
   };
 
-  if (!isAuthenticated) {
+  if (isLoading || !isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-card p-6">
         <Card className="w-full max-w-md shadow-warm">
-          <CardHeader>
-            <CardTitle className="text-2xl text-center">
-              Админ-панель "Битва закусок"
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <Input
-                  type="password"
-                  placeholder="Введите пароль"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full"
-                />
-              </div>
-              <Button type="submit" className="w-full gradient-amber text-foreground font-semibold">
-                Войти
-              </Button>
-            </form>
+          <CardContent className="p-6 text-center">
+            <p className="text-muted-foreground">Проверка доступа...</p>
           </CardContent>
         </Card>
       </div>
