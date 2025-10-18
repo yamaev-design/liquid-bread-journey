@@ -1,103 +1,72 @@
 import { MapPin } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import beerVarietiesImage from "@/assets/beer-varieties.jpg";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
-
-// Fix for default marker icons in Leaflet
-import icon from "leaflet/dist/images/marker-icon.png";
-import iconShadow from "leaflet/dist/images/marker-shadow.png";
-
-const DefaultIcon = L.icon({
-  iconUrl: icon,
-  shadowUrl: iconShadow,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-});
-
-L.Marker.prototype.options.icon = DefaultIcon;
+import { GoogleMap, LoadScript, Marker, InfoWindow } from '@react-google-maps/api';
 
 const beerStyles = [
   {
     country: "Бельгия",
     style: "Ламбик",
     description: "Спонтанное брожение дикими дрожжами. Кислый, сложный вкус с многолетней выдержкой.",
-    coordinates: [50.8503, 4.3517] as [number, number]
+    coordinates: { lat: 50.8503, lng: 4.3517 }
   },
   {
     country: "Германия",
     style: "Вайцен и Лагер",
     description: "Чистота, традиции и Reinheitsgebot. Пшеничное и чистое низовое брожение.",
-    coordinates: [51.1657, 10.4515] as [number, number]
+    coordinates: { lat: 51.1657, lng: 10.4515 }
   },
   {
     country: "Чехия",
     style: "Пилзнер",
     description: "Золотой стандарт светлого пива. Хмельной аромат и чистота вкуса с 1842 года.",
-    coordinates: [49.8175, 15.4730] as [number, number]
+    coordinates: { lat: 49.8175, lng: 15.4730 }
   },
   {
     country: "Англия",
     style: "Эль",
     description: "Верховое брожение, богатые вкусы. От светлого биттера до тёмного стаута.",
-    coordinates: [52.3555, -1.1743] as [number, number]
+    coordinates: { lat: 52.3555, lng: -1.1743 }
   },
   {
     country: "Россия",
     style: "Русский империал и лагер",
     description: "Крепкое тёмное пиво и классический лагер. От имперских стаутов до лёгкого жигулёвского.",
-    coordinates: [55.7558, 37.6173] as [number, number]
+    coordinates: { lat: 55.7558, lng: 37.6173 }
   },
   {
     country: "США",
     style: "IPA и крафт",
     description: "Революция хмеля и креативности. Крафтовое движение вернуло пиву многообразие.",
-    coordinates: [37.0902, -95.7129] as [number, number]
+    coordinates: { lat: 37.0902, lng: -95.7129 }
   }
 ];
 
+const mapContainerStyle = {
+  width: '100%',
+  height: '500px'
+};
+
+const center = {
+  lat: 30,
+  lng: 15
+};
+
+const mapOptions = {
+  zoom: 2,
+  disableDefaultUI: false,
+  zoomControl: true,
+  scrollwheel: false,
+  gestureHandling: 'cooperative'
+};
+
+// Замените на ваш Google Maps API ключ
+const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "YOUR_API_KEY_HERE";
+
 const Contemporary = () => {
   const [hoveredStyle, setHoveredStyle] = useState<number | null>(null);
-  const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<L.Map | null>(null);
-
-  useEffect(() => {
-    if (!mapRef.current || mapInstanceRef.current) return;
-
-    // Initialize map
-    const map = L.map(mapRef.current).setView([30, 15], 2);
-
-    // Add tile layer
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-    // Disable scroll zoom
-    map.scrollWheelZoom.disable();
-
-    // Add markers with popups
-    beerStyles.forEach((style) => {
-      const marker = L.marker(style.coordinates, { icon: DefaultIcon }).addTo(map);
-      marker.bindPopup(`
-        <div style="padding: 8px;">
-          <h4 style="font-weight: bold; margin-bottom: 4px; color: hsl(var(--primary));">${style.country}</h4>
-          <p style="font-size: 14px; font-weight: 600; margin-bottom: 8px; color: hsl(var(--accent));">${style.style}</p>
-          <p style="font-size: 12px; line-height: 1.5; color: hsl(var(--muted-foreground));">${style.description}</p>
-        </div>
-      `);
-    });
-
-    mapInstanceRef.current = map;
-
-    // Cleanup
-    return () => {
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove();
-        mapInstanceRef.current = null;
-      }
-    };
-  }, []);
+  const [selectedMarker, setSelectedMarker] = useState<number | null>(null);
 
   return (
     <section id="contemporary" className="py-20 px-6 bg-card relative overflow-hidden">
@@ -127,11 +96,43 @@ const Contemporary = () => {
             </p>
           </div>
 
-          {/* Interactive World Map */}
-          <div 
-            ref={mapRef}
-            className="relative h-[500px] rounded-xl border-2 border-border overflow-hidden z-0"
-          />
+          {/* Interactive Google Map */}
+          <div className="relative h-[500px] rounded-xl border-2 border-border overflow-hidden z-0">
+            <LoadScript googleMapsApiKey={GOOGLE_MAPS_API_KEY}>
+              <GoogleMap
+                mapContainerStyle={mapContainerStyle}
+                center={center}
+                options={mapOptions}
+              >
+                {beerStyles.map((style, index) => (
+                  <Marker
+                    key={index}
+                    position={style.coordinates}
+                    onClick={() => setSelectedMarker(index)}
+                  >
+                    {selectedMarker === index && (
+                      <InfoWindow
+                        position={style.coordinates}
+                        onCloseClick={() => setSelectedMarker(null)}
+                      >
+                        <div style={{ padding: '8px', maxWidth: '250px' }}>
+                          <h4 style={{ fontWeight: 'bold', marginBottom: '4px', color: 'hsl(36 75% 50%)' }}>
+                            {style.country}
+                          </h4>
+                          <p style={{ fontSize: '14px', fontWeight: 600, marginBottom: '8px', color: 'hsl(42 85% 65%)' }}>
+                            {style.style}
+                          </p>
+                          <p style={{ fontSize: '12px', lineHeight: '1.5', color: 'hsl(30 20% 45%)' }}>
+                            {style.description}
+                          </p>
+                        </div>
+                      </InfoWindow>
+                    )}
+                  </Marker>
+                ))}
+              </GoogleMap>
+            </LoadScript>
+          </div>
         </div>
 
         {/* Beer Styles Grid */}
@@ -145,6 +146,7 @@ const Contemporary = () => {
               style={{ animationDelay: `${index * 0.1}s` }}
               onMouseEnter={() => setHoveredStyle(index)}
               onMouseLeave={() => setHoveredStyle(null)}
+              onClick={() => setSelectedMarker(index)}
             >
               <CardContent className="p-6">
                 <div className="flex items-start gap-3 mb-3">
