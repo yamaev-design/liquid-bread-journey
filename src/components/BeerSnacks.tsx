@@ -3,6 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ThumbsUp, Fish, Nut, Cookie, Beef, Pizza } from "lucide-react";
 import beerSnacksImage from "@/assets/beer-snacks.jpg";
+import snackCrackersImage from "@/assets/snack-crackers.jpg";
+import snackNutsImage from "@/assets/snack-nuts.jpg";
+import snackFishImage from "@/assets/snack-fish.jpg";
+import snackMeatImage from "@/assets/snack-meat.jpg";
+import snackChipsImage from "@/assets/snack-chips.jpg";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -11,6 +16,7 @@ interface Snack {
   name: string;
   description: string;
   icon: any;
+  image: string;
   pros: string[];
   cons: string[];
   bestWith: string;
@@ -23,6 +29,7 @@ const snacks: Snack[] = [
     name: "Сухарики",
     description: "Классика пивных посиделок. Хрустящие, солёные, с разнообразными вкусами.",
     icon: Cookie,
+    image: snackCrackersImage,
     pros: ["Доступны везде", "Много вкусов", "Долго хранятся"],
     cons: ["Могут быть слишком солёными", "Быстро заканчиваются"],
     bestWith: "Светлое пиво, лагер",
@@ -33,6 +40,7 @@ const snacks: Snack[] = [
     name: "Орешки",
     description: "Солёный арахис, фисташки или миндаль — питательная и вкусная закуска.",
     icon: Nut,
+    image: snackNutsImage,
     pros: ["Питательные", "Много белка", "Сытные"],
     cons: ["Высокая калорийность", "Возможна аллергия"],
     bestWith: "Эль, IPA, тёмное пиво",
@@ -43,6 +51,7 @@ const snacks: Snack[] = [
     name: "Сушёная и вяленая рыба",
     description: "Традиционная русская закуска. Таранка, вобла, анчоусы.",
     icon: Fish,
+    image: snackFishImage,
     pros: ["Традиционная закуска", "Богата белком", "Уникальный вкус"],
     cons: ["Сильный запах", "Специфический вкус", "Кости"],
     bestWith: "Светлое пиво, пилзнер",
@@ -53,6 +62,7 @@ const snacks: Snack[] = [
     name: "Мясные закуски",
     description: "Колбаски, снеки, вяленое мясо, охотничьи колбаски.",
     icon: Beef,
+    image: snackMeatImage,
     pros: ["Сытные", "Хорошо сочетаются", "Разнообразие"],
     cons: ["Дорогие", "Калорийные", "Быстро портятся"],
     bestWith: "Тёмное пиво, стаут, портер",
@@ -63,6 +73,7 @@ const snacks: Snack[] = [
     name: "Картофельные чипсы",
     description: "Тонкие, хрустящие, солёные. Всегда под рукой.",
     icon: Pizza,
+    image: snackChipsImage,
     pros: ["Хрустящие", "Много вкусов", "Быстро едятся"],
     cons: ["Неполезные", "Жирные", "Быстро размокают"],
     bestWith: "Любое светлое пиво",
@@ -229,8 +240,18 @@ const BeerSnacks = () => {
                   </div>
                 )}
 
+                {/* Snack Image */}
+                <div className="relative h-48 overflow-hidden rounded-t-lg">
+                  <img 
+                    src={snack.image} 
+                    alt={snack.name}
+                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-card/80 to-transparent" />
+                </div>
+
                 {votedSnacks.length > 0 && (
-                  <div className="absolute top-0 left-0 right-0 h-2 bg-muted/30">
+                  <div className="absolute top-0 left-0 right-0 h-2 bg-muted/30 z-20">
                     <div 
                       className="h-full gradient-amber transition-all duration-500"
                       style={{ width: `${votePercentage}%` }}
@@ -239,11 +260,13 @@ const BeerSnacks = () => {
                 )}
 
                 <CardHeader>
-                  <div className="w-16 h-16 bg-gradient-amber rounded-full flex items-center justify-center mb-4 shadow-warm">
-                    <Icon className="w-8 h-8 text-primary-foreground" />
-                  </div>
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-2xl">{snack.name}</CardTitle>
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-gradient-amber rounded-full flex items-center justify-center shadow-warm">
+                        <Icon className="w-6 h-6 text-primary-foreground" />
+                      </div>
+                      <CardTitle className="text-2xl">{snack.name}</CardTitle>
+                    </div>
                     {votedSnacks.length > 0 && (
                       <span className="text-sm font-bold text-primary">
                         {votePercentage}%
