@@ -6,6 +6,7 @@ import BeerPourAnimation from "@/components/BeerPourAnimation";
 import BeerSnacks from "@/components/BeerSnacks";
 import Contemporary from "@/components/Contemporary";
 import BeerRecipeGenerator from "@/components/BeerRecipeGenerator";
+import BeerBrandInfo from "@/components/BeerBrandInfo";
 import Responsibility from "@/components/Responsibility";
 import Footer from "@/components/Footer";
 
@@ -21,6 +22,7 @@ const Index = () => {
         <BeerSnacks />
         <Contemporary />
         <BeerRecipeGenerator />
+        <BeerBrandInfo />
         <Responsibility />
       </main>
       <Footer />
