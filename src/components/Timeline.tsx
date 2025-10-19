@@ -2,6 +2,11 @@ import { Scroll, Pyramid, Church, Ship, Beer } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useState } from "react";
 import beerPourImage from "@/assets/beer-pour.jpg";
+import sumerianImage from "@/assets/timeline-sumerians.jpg";
+import egyptImage from "@/assets/timeline-egypt.jpg";
+import monksImage from "@/assets/timeline-monks.jpg";
+import hanseaticImage from "@/assets/timeline-hanseatic.jpg";
+import bavariaImage from "@/assets/timeline-bavaria.jpg";
 
 const timelineEvents = [
   {
@@ -9,35 +14,40 @@ const timelineEvents = [
     title: "Шумеры",
     period: "6-7 тыс. лет назад",
     description: "Клинописные таблички хранят древнейшие рецепты пивоварения. Шумеры почитали богиню Нинкаси — покровительницу пива.",
-    fact: "Гимн Нинкаси — это одновременно молитва и рецепт пива"
+    fact: "Гимн Нинкаси — это одновременно молитва и рецепт пива",
+    image: sumerianImage
   },
   {
     icon: Pyramid,
     title: "Египет",
     period: "3000 г. до н.э.",
     description: "Пиво было ежедневной пищей для фараонов и строителей пирамид. Его пили все — от детей до жрецов.",
-    fact: "Рабочим давали пиво как часть зарплаты"
+    fact: "Рабочим давали пиво как часть зарплаты",
+    image: egyptImage
   },
   {
     icon: Church,
     title: "Средневековые монахи",
     period: "VI-XV века",
     description: "В постные дни монахи называли пиво 'жидким хлебом' (Flüssiges Brot). Монастыри стали центрами пивоварения.",
-    fact: "Монахи могли выпивать до 5 литров пива в день во время поста"
+    fact: "Монахи могли выпивать до 5 литров пива в день во время поста",
+    image: monksImage
   },
   {
     icon: Ship,
     title: "Ганзейские купцы",
     period: "XII-XVII века",
     description: "Пивные гильдии процветали в торговых городах. Пиво стало валютой и гарантией качества.",
-    fact: "Гамбургское пиво поставлялось во все порты Балтики"
+    fact: "Гамбургское пиво поставлялось во все порты Балтики",
+    image: hanseaticImage
   },
   {
     icon: Beer,
     title: "Бавария",
     period: "XVI век - наше время",
     description: "Закон о чистоте пива (Reinheitsgebot) 1516 года. Появление лагера благодаря холодному брожению.",
-    fact: "Баварские пивовары изобрели лагер, храня пиво в холодных пещерах"
+    fact: "Баварские пивовары изобрели лагер, храня пиво в холодных пещерах",
+    image: bavariaImage
   }
 ];
 
@@ -82,31 +92,37 @@ const Timeline = () => {
                   {/* Content Card */}
                   <div className="w-full lg:w-5/12">
                     <Card 
-                      className={`shadow-warm hover:shadow-glow transition-all duration-300 hover:scale-105 cursor-pointer ${
+                      className={`shadow-warm hover:shadow-glow transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden ${
                         selectedEvent === index ? 'ring-2 ring-primary scale-105' : ''
                       }`}
                       onClick={() => setSelectedEvent(selectedEvent === index ? null : index)}
                     >
-                      <CardContent className="p-6">
-                        <div className="flex items-start gap-4">
-                          <div className="p-3 bg-gradient-amber rounded-full shadow-warm">
-                            <Icon className="w-6 h-6 text-primary-foreground" />
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="text-2xl font-bold mb-1 text-foreground">
-                              {event.title}
-                            </h3>
-                            <p className="text-sm text-accent font-semibold mb-3">
-                              {event.period}
-                            </p>
-                            <p className="text-muted-foreground mb-3 leading-relaxed">
-                              {event.description}
-                            </p>
-                            <p className="text-sm italic text-primary bg-primary/10 p-3 rounded-lg border-l-4 border-primary">
-                              💡 {event.fact}
-                            </p>
-                          </div>
+                      {/* Image Header */}
+                      <div className="relative h-48 overflow-hidden">
+                        <img 
+                          src={event.image} 
+                          alt={event.title}
+                          className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+                        <div className="absolute bottom-3 left-3 p-3 bg-gradient-amber rounded-full shadow-warm">
+                          <Icon className="w-6 h-6 text-primary-foreground" />
                         </div>
+                      </div>
+                      
+                      <CardContent className="p-6">
+                        <h3 className="text-2xl font-bold mb-1 text-foreground">
+                          {event.title}
+                        </h3>
+                        <p className="text-sm text-accent font-semibold mb-3">
+                          {event.period}
+                        </p>
+                        <p className="text-muted-foreground mb-3 leading-relaxed">
+                          {event.description}
+                        </p>
+                        <p className="text-sm italic text-primary bg-primary/10 p-3 rounded-lg border-l-4 border-primary">
+                          💡 {event.fact}
+                        </p>
                       </CardContent>
                     </Card>
                   </div>
